@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'models/club_model.dart';  // ← add this line
+import 'models/club_model.dart';
 import 'app/app.dart';
 
 void main() {
-  // Dart practice
-  String appName = 'Campus Club Hub';
-  int totalClubs = 5;
-  bool isRunning = true;
+  WidgetsFlutterBinding.ensureInitialized(); // ← add this line
 
+  // Dart practice
   List<String> domains = ['Technical', 'Cultural', 'Sports', 'Social'];
   for (String domain in domains) {
     print('Domain: $domain');
