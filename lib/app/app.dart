@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
         GetPage(name: AppRoutes.dashboard, page: () => const DashboardScreen()),
-        GetPage(name: AppRoutes.clubList, page: () => const ClubListScreen()),
+        GetPage(name: AppRoutes.clubList, page: () => const ClubsListScreen()),
         GetPage(name: AppRoutes.clubProfile, page: () => const ClubProfileScreen()),
         GetPage(name: AppRoutes.memberForm, page: () => const MemberFormScreen()),
         GetPage(name: AppRoutes.eventList, page: () => const EventListScreen()),

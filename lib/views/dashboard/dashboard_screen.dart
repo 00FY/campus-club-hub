@@ -17,6 +17,10 @@ class DashboardScreen extends StatelessWidget {
         title: const Text('Campus Club Hub'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.event),
+            onPressed: () => Get.toNamed('/event-list'),
+          ),
+          IconButton(
             icon: const Icon(Icons.groups),
             onPressed: () => Get.toNamed('/club-list'),
           ),
@@ -40,7 +44,6 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome banner
             Stack(
               children: [
                 Container(
@@ -156,13 +159,22 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            const Text(
-              'Recent Events',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Recent Events',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Get.toNamed('/event-list'),
+                  child: const Text('See all'),
+                ),
+              ],
             ),
 
             const SizedBox(height: 12),
