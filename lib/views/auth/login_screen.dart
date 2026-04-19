@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
+import '../../controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,15 +11,24 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
   String selectedRole = 'Teacher';
   bool obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background top half color
           Positioned(
             top: 0,
             left: 0,
@@ -33,8 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
-          // Main content
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -42,8 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 48),
-
-                  // Logo
                   Container(
                     width: 90,
                     height: 90,
@@ -64,10 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.primary,
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Title on colored background
                   const Text(
                     'Campus Club Hub',
                     style: TextStyle(
@@ -76,20 +80,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white,
                     ),
                   ),
-
                   const SizedBox(height: 4),
-
                   const Text(
                     'Vishwakarma Institute of Technology',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.white70),
                   ),
-
                   const SizedBox(height: 48),
-
-                  // Login card
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -114,9 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.textPrimary,
                           ),
                         ),
-
                         const SizedBox(height: 4),
-
                         const Text(
                           'Enter your VIT credentials',
                           style: TextStyle(
@@ -124,11 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.textSecondary,
                           ),
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Email
                         TextField(
+                          controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
                             labelText: 'Email',
@@ -136,11 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Password
                         TextField(
+                          controller: _passwordController,
                           obscureText: obscurePassword,
                           decoration: InputDecoration(
                             labelText: 'Password',
@@ -153,15 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : Icons.visibility_off_outlined,
                               ),
                               onPressed: () {
-                                Navigator.pushReplacementNamed(context, '/dashboard');
+                                setState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
                               },
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Role dropdown
                         DropdownButtonFormField<String>(
                           value: selectedRole,
                           decoration: const InputDecoration(
@@ -179,21 +168,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                           onChanged: (value) {
-                            setState(() {
-                              selectedRole = value!;
-                            });
+                            setState(() => selectedRole = value!);
                           },
                         ),
-
                         const SizedBox(height: 28),
-
-                        // Login button
-                        SizedBox(
+                        Obx(() => SizedBox(
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed: () {},
-                            child: const Text(
+                            onPressed: _authController.isLoading.value
+                                ? null
+                                : () {
+                              _authController.login(
+                                _emailController.text,
+                                selectedRole,
+                              );
+                            },
+                            child: _authController.isLoading.value
+                                ? const CircularProgressIndicator(
+                                color: Colors.white)
+                                : const Text(
                               'Login',
                               style: TextStyle(
                                 fontSize: 16,
@@ -201,14 +195,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                        ),
+                        )),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Bottom row using Row + Expanded
                   Row(
                     children: [
                       Expanded(
@@ -234,7 +225,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),

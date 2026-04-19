@@ -1,19 +1,20 @@
-// Pure Dart class — no Flutter, no Firebase needed
 class ClubModel {
   final String id;
   final String name;
   final String domain;
   final bool isActive;
+  final int memberCount;
+  final int eventCount;
 
-  // Constructor
   const ClubModel({
     required this.id,
     required this.name,
     required this.domain,
     required this.isActive,
+    this.memberCount = 0,
+    this.eventCount = 0,
   });
 
-  // Dart basics: functions
   String getStatus() {
     if (isActive) {
       return '$name is currently active';
@@ -22,7 +23,6 @@ class ClubModel {
     }
   }
 
-  // toString so you can print the object
   @override
   String toString() {
     return 'Club: $name | Domain: $domain | Active: $isActive';

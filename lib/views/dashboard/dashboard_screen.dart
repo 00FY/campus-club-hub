@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/club_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ClubController clubController = Get.find<ClubController>();
+    final AuthController authController = Get.find<AuthController>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Campus Club Hub'),
         actions: [
           IconButton(
             icon: const Icon(Icons.groups),
-            onPressed: () {
-              Navigator.pushNamed(context, '/club-list');
-            },
+            onPressed: () => Get.toNamed('/club-list'),
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/login');
-            },
+            onPressed: () => authController.logout(),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushNamed(context, '/club-list'),
+        onPressed: () => Get.toNamed('/club-list'),
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.groups, color: Colors.white),
         label: const Text(
@@ -38,7 +40,7 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome banner using Stack
+            // Welcome banner
             Stack(
               children: [
                 Container(
@@ -50,24 +52,30 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'Welcome back!',
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Teacher Dashboard',
                         style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Obx(() => Text(
+                        '${authController.userRole.value} Dashboard',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
+                      )),
+                      const SizedBox(height: 8),
+                      const Text(
                         'Manage all clubs and events',
-                        style: TextStyle(color: Colors.white60, fontSize: 13),
+                        style: TextStyle(
+                          color: Colors.white60,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -100,13 +108,13 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            Row(
+            Obx(() => Row(
               children: [
                 Expanded(
                   child: _StatCard(
                     icon: Icons.groups,
                     label: 'Total Clubs',
-                    value: '12',
+                    value: clubController.clubs.length.toString(),
                     color: AppColors.primary,
                   ),
                 ),
@@ -115,22 +123,22 @@ class DashboardScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Icons.check_circle_outline,
                     label: 'Active Clubs',
-                    value: '8',
+                    value: clubController.totalActiveClubs.toString(),
                     color: AppColors.success,
                   ),
                 ),
               ],
-            ),
+            )),
 
             const SizedBox(height: 12),
 
-            Row(
+            Obx(() => Row(
               children: [
                 Expanded(
                   child: _StatCard(
                     icon: Icons.event,
                     label: 'Total Events',
-                    value: '34',
+                    value: clubController.totalEvents.toString(),
                     color: AppColors.accent,
                   ),
                 ),
@@ -139,12 +147,12 @@ class DashboardScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Icons.people_outline,
                     label: 'Members',
-                    value: '256',
+                    value: clubController.totalMembers.toString(),
                     color: AppColors.warning,
                   ),
                 ),
               ],
-            ),
+            )),
 
             const SizedBox(height: 24),
 
