@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
+import 'package:app20/services/api_services.dart';
 
 class EventModel {
   final String id;
@@ -23,95 +24,116 @@ class EventModel {
 class EventListScreen extends StatelessWidget {
   const EventListScreen({super.key});
 
+  // ✅ API fetch function
+  Future<List<EventModel>> fetchEvents() async {
+    final data = await ApiService.fetchEvents();
+    final clubs = ["IEEE", "CSI", "ACM", "Cultural Club", "Sports Club"];
+
+    return data.take(10).toList().asMap().entries.map((entry) {
+      final index = entry.key;
+      final item = entry.value;
+
+      return EventModel(
+        id: item['id'].toString(),
+        name: "Event ${item['id']}",
+        clubName: clubs[index % clubs.length],
+        date: '2025',
+        attendance: 0,
+        isCompleted: true,
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Dummy event data
-    final events = [
-      EventModel(id: '1', name: 'Tech Fest 2024', clubName: 'IEEE',
-          date: 'Dec 15, 2024', attendance: 120, isCompleted: true),
-      EventModel(id: '2', name: 'Cultural Night', clubName: 'Culturals Club',
-          date: 'Dec 10, 2024', attendance: 200, isCompleted: true),
-      EventModel(id: '3', name: 'Hackathon', clubName: 'Coding Club',
-          date: 'Dec 5, 2024', attendance: 80, isCompleted: true),
-      EventModel(id: '4', name: 'Sports Meet', clubName: 'Sports Club',
-          date: 'Jan 10, 2025', attendance: 0, isCompleted: false),
-      EventModel(id: '5', name: 'Social Drive', clubName: 'NSS',
-          date: 'Jan 15, 2025', attendance: 0, isCompleted: false),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Events'),
       ),
-      body: Column(
-        children: [
-          // Summary cards
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _MiniStatCard(
-                    label: 'Total',
-                    value: events.length.toString(),
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _MiniStatCard(
-                    label: 'Completed',
-                    value: events.where((e) => e.isCompleted).length.toString(),
-                    color: AppColors.success,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _MiniStatCard(
-                    label: 'Upcoming',
-                    value: events.where((e) => !e.isCompleted).length.toString(),
-                    color: AppColors.warning,
-                  ),
-                ),
-              ],
-            ),
-          ),
+      body: FutureBuilder<List<EventModel>>(
+        future: fetchEvents(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          // List header
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'All Events',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final events = snapshot.data!;
+
+          return Column(
+            children: [
+              // Summary cards
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _MiniStatCard(
+                        label: 'Total',
+                        value: events.length.toString(),
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _MiniStatCard(
+                        label: 'Completed',
+                        value: events.length.toString(),
+                        color: AppColors.success,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _MiniStatCard(
+                        label: 'Upcoming',
+                        value: '0',
+                        color: AppColors.warning,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
 
-          const SizedBox(height: 8),
+              // Header
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'All Events',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ),
 
-          // ListView.builder
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                final event = events[index];
-                return EventCard(event: event);
-              },
-            ),
-          ),
-        ],
+              const SizedBox(height: 8),
+
+              // Event list
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    return EventCard(event: events[index]);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
+// ✅ FULL EventCard (your original styled version)
 class EventCard extends StatelessWidget {
   final EventModel event;
 
@@ -130,19 +152,18 @@ class EventCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Color indicator
             Container(
               width: 4,
               height: 60,
               decoration: BoxDecoration(
                 color: event.isCompleted
-                    ? AppColors.success : AppColors.warning,
+                    ? AppColors.success
+                    : AppColors.warning,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
             const SizedBox(width: 14),
 
-            // Event info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,10 +216,8 @@ class EventCard extends StatelessWidget {
               ),
             ),
 
-            // Status badge
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: event.isCompleted
                     ? AppColors.success.withOpacity(0.1)
@@ -209,7 +228,8 @@ class EventCard extends StatelessWidget {
                 event.isCompleted ? 'Done' : 'Upcoming',
                 style: TextStyle(
                   color: event.isCompleted
-                      ? AppColors.success : AppColors.warning,
+                      ? AppColors.success
+                      : AppColors.warning,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
@@ -222,6 +242,7 @@ class EventCard extends StatelessWidget {
   }
 }
 
+// ✅ Mini stat card
 class _MiniStatCard extends StatelessWidget {
   final String label;
   final String value;
