@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
 import '../../controllers/auth_controller.dart';
+import 'package:app20/services/storage_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -142,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 setState(() {
                                   obscurePassword = !obscurePassword;
                                 });
@@ -178,7 +179,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: ElevatedButton(
                             onPressed: _authController.isLoading.value
                                 ? null
-                                : () {
+                                : () async {
+                              await StorageService.saveLogin(true);
+                              await StorageService.saveRole(selectedRole);
+
                               _authController.login(
                                 _emailController.text,
                                 selectedRole,
