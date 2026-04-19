@@ -153,9 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : Icons.visibility_off_outlined,
                               ),
                               onPressed: () {
-                                setState(() {
-                                  obscurePassword = !obscurePassword;
-                                });
+                                Navigator.pushReplacementNamed(context, '/dashboard');
                               },
                             ),
                           ),

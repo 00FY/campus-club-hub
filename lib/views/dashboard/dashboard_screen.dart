@@ -11,14 +11,27 @@ class DashboardScreen extends StatelessWidget {
         title: const Text('Campus Club Hub'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            icon: const Icon(Icons.groups),
+            onPressed: () {
+              Navigator.pushNamed(context, '/club-list');
+            },
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/club-list'),
+        backgroundColor: AppColors.primary,
+        icon: const Icon(Icons.groups, color: Colors.white),
+        label: const Text(
+          'View Clubs',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -40,10 +53,7 @@ class DashboardScreen extends StatelessWidget {
                     children: const [
                       Text(
                         'Welcome back!',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -57,15 +67,11 @@ class DashboardScreen extends StatelessWidget {
                       SizedBox(height: 8),
                       Text(
                         'Manage all clubs and events',
-                        style: TextStyle(
-                          color: Colors.white60,
-                          fontSize: 13,
-                        ),
+                        style: TextStyle(color: Colors.white60, fontSize: 13),
                       ),
                     ],
                   ),
                 ),
-                // Decorative circle using Positioned inside Stack
                 Positioned(
                   right: -20,
                   top: -20,
@@ -94,7 +100,6 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Stat cards using Row + Expanded
             Row(
               children: [
                 Expanded(
@@ -154,7 +159,6 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Recent events list
             _EventTile(
               name: 'Tech Fest 2024',
               club: 'IEEE',
